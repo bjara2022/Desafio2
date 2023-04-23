@@ -44,10 +44,10 @@ class ProductManager{
         }
       };
   // Incremento mi variable privada en 1 cada vez que sumo un producto
-  #incrementId() {
+    #incrementId() {
     this.#id++;
     return this.#id;
-  }
+    }
   // Metodo para mostrar la listas de producto
   getProducts = async () => {
     const products = await this.#readFile();
@@ -55,8 +55,9 @@ class ProductManager{
     return products;
     
     };
-    
-getProductById = async (id) => {
+// Metodo para mostrar la listas de producto por ID   
+    getProductById = async (id) => {
+        // Lee el archivo y busca el idex para comparar con el ID y mostrar el array en consola
         const products = await this.#readFile();
         const index = products.findIndex((product) => product.id === id);
         if (index !== -1) {
@@ -65,6 +66,7 @@ getProductById = async (id) => {
           console.log("Producto inexistente");
         }
       }
+      // Metodo para modificar campos del producto y no el ID
       updateProduct = async (id, updatedProduct) => {
         const products = await this.#readFile();
         const index = products.findIndex((product) => product.id === id);
@@ -73,9 +75,9 @@ getProductById = async (id) => {
           products[index] = {
             ...products[index],
             ...updatedProduct,
-            id // no se debe borrar el ID
+            id // no se borra
           };
-          // aca vuelve a sobreescribir el archivo y muestra por consola cual ID se modifico
+          // aca vuelve a sobre escribir el archivo y muestra por consola cual ID se modifico
           await fs.promises.writeFile(this.path, JSON.stringify(products));
           console.log(`Producto con ID ${id} actualizado`);
           console.log(products[index]);
@@ -85,13 +87,14 @@ getProductById = async (id) => {
           console.log("Is de producto no encontrado");
         }
       };
+      // Metodo para eliminar un producto
       deleteProduct = async (id) => {
         const products = await this.#readFile();
         const index = products.findIndex((product) => product.id === id);
         // Si encuentra el id lo borra de productos
         if (index !== -1) {
           products.splice(index, 1);
-          //aca sobreescribe despues de la eliminacion 
+          //aca sobreescribe el archivo despues de eliminar el producto
           await fs.promises.writeFile(this.path, JSON.stringify(products));
           console.log(`Producto con ID ${id} eliminado`);
         } else {
@@ -100,10 +103,13 @@ getProductById = async (id) => {
         }
       };  
 }
+// Pruebas
 const prueba = new ProductManager('./productos');
 const test = async () => {
 	try {
+        // Se prueba la vizualizacion del arreglo vacio
 		await prueba.getProducts();
+        // Se agrega un producto 
 		await prueba.addProduct(
 			'producto prueba',
 			'Este es un producto prueba',
@@ -129,6 +135,7 @@ const test = async () => {
 			'abc12345',
 			25
 		);
+        // Se prueba la busqueda por ID
         await prueba.getProductById(2);
         // Se prueba el erro cuando no hay ID en products
         await prueba.getProductById(4);
@@ -136,7 +143,9 @@ const test = async () => {
 		await prueba.updateProduct(1, 
             { title: 'prueba3', description: 'prueba3', price: 1000, thumbnail: 'prueba3', code: 500, stock:20});
         // Se prueba eliminar el ID 1 del archivo de productos     
-        await prueba.deleteProduct(1)    
+        await prueba.deleteProduct(1)
+        // Se prueba eliminar un ID inexistente o producto inexistente
+        await prueba.deleteProduct(5)     
 	} catch (error) {
 		console.log('error en codigo');
 	}
